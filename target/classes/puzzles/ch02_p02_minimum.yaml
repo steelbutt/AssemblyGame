@@ -1,0 +1,50 @@
+id: ch02_p02
+chapter: 2
+title: "MINIMUM SIGNAL"
+story_file: ch02_p02.txt
+
+grid:
+  rows: 1
+  cols: 4
+
+nodes:
+  - id: 0
+    row: 0
+    col: 0
+    locked: false
+
+  - id: 1
+    row: 0
+    col: 1
+    locked: false
+
+  - id: 2
+    row: 0
+    col: 2
+    locked: false
+
+  - id: 3
+    row: 0
+    col: 3
+    locked: false
+
+ports:
+  - from_node: 0
+    to_node: 1
+    direction: RIGHT
+  - from_node: 1
+    to_node: 2
+    direction: RIGHT
+  - from_node: 2
+    to_node: 3
+    direction: RIGHT
+
+test_vectors:
+  - input:  [5, 3, 8, 1]
+    output: [1]
+  - input:  [10, 20, 5, 15]
+    output: [5]
+  - input:  [7, 7, 7, 7]
+    output: [7]
+
+max_cycles: 500

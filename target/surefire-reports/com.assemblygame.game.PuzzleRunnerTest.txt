@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.assemblygame.game.PuzzleRunnerTest
+-------------------------------------------------------------------------------
+Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.210 s -- in com.assemblygame.game.PuzzleRunnerTest

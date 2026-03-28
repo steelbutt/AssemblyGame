@@ -1,0 +1,15 @@
+[BRIEFING]
+The alarm system triggers on the lowest sensor reading
+across four zones. Build a pipeline across all four nodes.
+
+Each node reads one value from INPUT and the current
+minimum from the LEFT port ($F0), then passes the smaller
+value to the RIGHT port ($F1). NODE 3 writes to OUTPUT.
+
+NODE 0 has no left neighbor — seed the pipeline by
+reading from INPUT and sending right.
+
+[LOG]
+1979-03-20 >> alarm.subsystem: 4-zone pipeline needed
+1979-03-20 >> zones: DELTA, ECHO, FOXTROT, GOLF
+1979-03-20 >> min.pipeline: ALL NODES UNINITIALIZED

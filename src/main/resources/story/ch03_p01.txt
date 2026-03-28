@@ -1,0 +1,11 @@
+[BRIEFING]
+The vault sequencer requires values to arrive in sorted
+order — smallest first. Read two values and output them
+in ascending order (smaller first, then larger).
+
+This is the foundation of a sorting network. Get it right.
+
+[LOG]
+1979-03-22 >> vault.control: SEQUENCE CHECK ENABLED
+1979-03-22 >> sort.node 00: PROGRAM REQUIRED
+1979-03-22 >> NOTE: unsorted input triggers lockout

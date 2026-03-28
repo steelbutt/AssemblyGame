@@ -1,0 +1,14 @@
+[BRIEFING]
+DELTA-6 is online. Barely.
+
+The main bus is transmitting raw sensor readings, but
+the calibration firmware was wiped. Every value needs
+to be doubled before it reaches the control panel.
+
+Read each value from INPUT. Double it. Write to OUTPUT.
+
+[LOG]
+1979-03-14 >> DELTA-6 POWER RESTORED
+1979-03-14 >> KERNEL LOADED FROM BACKUP TAPE
+1979-03-14 >> WARNING: calibration.bin CORRUPTED
+1979-03-14 >> MANUAL RECALIBRATION REQUIRED

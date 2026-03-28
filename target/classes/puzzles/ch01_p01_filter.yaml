@@ -1,0 +1,38 @@
+id: ch01_p01
+chapter: 1
+title: "SIGNAL FILTER"
+story_file: ch01_p01.txt
+
+grid:
+  rows: 1
+  cols: 2
+
+nodes:
+  - id: 0
+    row: 0
+    col: 0
+    locked: false
+
+  - id: 1
+    row: 0
+    col: 1
+    locked: true
+    code: |
+      loop: LDA $F0
+            BEQ loop
+            BMI loop
+            STA $FF
+            JMP loop
+
+ports:
+  - from_node: 0
+    to_node: 1
+    direction: RIGHT
+
+test_vectors:
+  - input:  [3, -1, 7, 0, -4, 5]
+    output: [3, 7, 5]
+  - input:  [1, -2, -3, 4, 0, 6]
+    output: [1, 4, 6]
+
+max_cycles: 500

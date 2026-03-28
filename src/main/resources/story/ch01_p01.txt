@@ -1,0 +1,13 @@
+[BRIEFING]
+The comms array is picking up ghost signals — negative
+readings from dead sectors mixed in with real data.
+
+NODE 1 is pre-programmed to strip out zeroes and negatives.
+Your job: write NODE 0 to forward every incoming value to
+NODE 1 via the RIGHT port ($F1).
+
+[LOG]
+1979-03-15 >> comms.array STATUS: DEGRADED
+1979-03-15 >> sector[3..7] feeding null/negative values
+1979-03-15 >> NODE 01 filter: READY
+1979-03-15 >> NODE 00 program: MISSING
