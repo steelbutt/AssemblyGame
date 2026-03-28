@@ -46,6 +46,7 @@ public class PuzzleView {
     private TextColor statusColor = TextColor.ANSI.GREEN;
     private List<Integer> lastActualOutput = new ArrayList<>();
     private int lastCycles = 0;
+    private boolean showHelp = false;
 
     public PuzzleView(Screen screen, Puzzle puzzle, SaveState saveState,
                       PuzzleRunner runner, String chapterTitle) {
@@ -83,35 +84,31 @@ public class PuzzleView {
 
             if (key.getKeyType() == KeyType.Character) {
                 char c = key.getCharacter();
-                if (key.isCtrlDown() || key.isAltDown()) {
-                    handleCtrlKey(c);
+                if (showHelp) {
+                    showHelp = false; // any key dismisses help
                 } else {
-                    switch (Character.toLowerCase(c)) {
-                        case 'r' -> { if (runPuzzle()) return true; }
-                        case 'q' -> { return false; }
-                        default  -> insertChar(c);
-                    }
+                    insertChar(c);
                 }
             } else {
-                switch (key.getKeyType()) {
-                    case Tab       -> switchNode();
-                    case Enter     -> insertNewline();
-                    case Backspace -> backspace();
-                    case Delete    -> deleteChar();
-                    case ArrowUp   -> moveCursor(-1);
-                    case ArrowDown -> moveCursor(1);
-                    case ArrowLeft -> { /* future: column cursor */ }
-                    case ArrowRight -> { /* future: column cursor */ }
-                    case F5        -> runPuzzle();
-                    default        -> {}
+                if (showHelp) {
+                    showHelp = false; // any key dismisses help
+                } else {
+                    switch (key.getKeyType()) {
+                        case F5        -> { if (runPuzzle()) return true; }
+                        case F1        -> showHelp = true;
+                        case Escape    -> { return false; }
+                        case Tab       -> switchNode();
+                        case Enter     -> insertNewline();
+                        case Backspace -> backspace();
+                        case Delete    -> deleteChar();
+                        case ArrowUp   -> moveCursor(-1);
+                        case ArrowDown -> moveCursor(1);
+                        default        -> {}
+                    }
                 }
             }
             render();
         }
-    }
-
-    private void handleCtrlKey(char c) {
-        // Ctrl+R = run, Ctrl+Q = quit handled by caller pattern above
     }
 
     private boolean runPuzzle() throws Exception {
@@ -262,7 +259,7 @@ public class PuzzleView {
         g.setForegroundColor(TextColor.ANSI.GREEN);
         g.putString(1, bottomBorderRow + 3, "\u2551");
         g.setForegroundColor(TextColor.ANSI.GREEN);
-        String controls = " [R]un  [Tab] switch node  [Q]uit";
+        String controls = " [F5] Run  [Tab] Switch node  [F1] Help  [Esc] Back";
         String cyclesStr = lastCycles > 0 ? "  Cycles: " + lastCycles + "  " : "  ";
         g.putString(2, bottomBorderRow + 3, controls + cyclesStr);
         g.setForegroundColor(statusColor);
@@ -273,6 +270,8 @@ public class PuzzleView {
 
         // Final border
         drawHBorder(g, bottomBorderRow + 4, totalWidth, '\u255a', '\u2550', '\u255d');
+
+        if (showHelp) renderHelpOverlay(g, totalWidth, totalHeight);
 
         screen.refresh();
     }
@@ -385,6 +384,68 @@ public class PuzzleView {
             portInfo.append("(no inter-node ports)");
         }
         g.putString(x, row, padRight(portInfo.toString(), width));
+    }
+
+    private void renderHelpOverlay(TextGraphics g, int totalWidth, int totalHeight) {
+        int w = 56;
+        int h = 28;
+        int x = (totalWidth - w) / 2;
+        int y = (totalHeight - h) / 2;
+
+        // Shadow
+        g.setForegroundColor(TextColor.ANSI.BLACK);
+        for (int r = y + 1; r < y + h + 1; r++)
+            g.putString(x + 2, r, " ".repeat(w));
+
+        // Box background
+        g.setForegroundColor(TextColor.ANSI.GREEN_BRIGHT);
+        g.putString(x, y, "\u2554" + "\u2550".repeat(w - 2) + "\u2557");
+        String title = "  DELTA-6 OPERATOR REFERENCE  ";
+        g.putString(x, y + 1, "\u2551" + padRight(title, w - 2) + "\u2551");
+        g.putString(x, y + 2, "\u2560" + "\u2550".repeat(w - 2) + "\u2563");
+        for (int r = y + 3; r < y + h - 1; r++)
+            g.putString(x, r, "\u2551" + " ".repeat(w - 2) + "\u2551");
+        g.putString(x, y + h - 1, "\u255a" + "\u2550".repeat(w - 2) + "\u255d");
+
+        // Content
+        g.setForegroundColor(TextColor.ANSI.GREEN_BRIGHT);
+        int cx = x + 2;
+        int row = y + 3;
+        g.putString(cx, row++, "CONTROLS");
+        g.setForegroundColor(TextColor.ANSI.GREEN);
+        g.putString(cx, row++, "  F5          Run program against test vectors");
+        g.putString(cx, row++, "  Tab         Switch to next editable node");
+        g.putString(cx, row++, "  Esc         Return to mission select");
+        g.putString(cx, row++, "  F1          Toggle this help screen");
+        g.putString(cx, row++, "  Arrow keys  Navigate editor lines");
+        g.putString(cx, row++, "  Enter       New line");
+        g.putString(cx, row++, "  Backspace   Delete character");
+        row++;
+        g.setForegroundColor(TextColor.ANSI.GREEN_BRIGHT);
+        g.putString(cx, row++, "SPECIAL ADDRESSES");
+        g.setForegroundColor(TextColor.ANSI.GREEN);
+        g.putString(cx, row++, "  $FE         Read next value from puzzle input");
+        g.putString(cx, row++, "  $FF         Write value to puzzle output");
+        g.putString(cx, row++, "  $F0         LEFT port  (blocks until neighbor writes)");
+        g.putString(cx, row++, "  $F1         RIGHT port");
+        g.putString(cx, row++, "  $F2         UP port");
+        g.putString(cx, row++, "  $F3         DOWN port");
+        row++;
+        g.setForegroundColor(TextColor.ANSI.GREEN_BRIGHT);
+        g.putString(cx, row++, "USEFUL PATTERNS");
+        g.setForegroundColor(TextColor.ANSI.GREEN);
+        g.putString(cx, row++, "  loop: LDA $FE / ... / JMP loop   process stream");
+        g.putString(cx, row++, "  CLC / LDA x / ASL A              double a value");
+        g.putString(cx, row++, "  CMP #N / BCC done / SBC #N       divide by N");
+        g.putString(cx, row++, "  BEQ / BMI / BPL / BNE            conditional flow");
+        row++;
+        g.setForegroundColor(TextColor.ANSI.GREEN_BRIGHT);
+        g.putString(cx, row++, "CONSTRAINTS");
+        g.setForegroundColor(TextColor.ANSI.GREEN);
+        g.putString(cx, row++, "  Max 20 instructions per node  |  Carry = 0 at start");
+
+        g.setForegroundColor(TextColor.ANSI.GREEN_BRIGHT);
+        g.putString(x + 2, y + h - 2, "[ PRESS ANY KEY TO CLOSE ]");
     }
 
     private void drawHBorder(TextGraphics g, int row, int totalWidth,

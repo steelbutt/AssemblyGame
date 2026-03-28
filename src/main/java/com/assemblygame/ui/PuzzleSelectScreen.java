@@ -90,7 +90,7 @@ public class PuzzleSelectScreen {
 
         row += 2;
         g.setForegroundColor(TextColor.ANSI.GREEN);
-        g.putString(4, row, "[ENTER] Select   [↑/↓] Navigate   [Q] Quit");
+        g.putString(4, row, "[Enter] Select   [↑/↓] Navigate   [Q / Esc] Quit");
 
         screen.refresh();
     }
